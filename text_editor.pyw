@@ -110,7 +110,7 @@ def redo_action(event = None):
     content_text.event_generate("<<Redo>>")
     on_content_changed()
     return 'break'
- #  return 'break' The return 'break' expression in the preceding function
+#  return 'break' The return 'break' expression in the preceding function
 # tells the system that it has performed the event and that it should not be
 # propagated further.
 def cut():
@@ -211,15 +211,21 @@ def show_line_no():
         on_content_changed()
     else:
         pass
-def highlight():
-    dir(print("OK"))
+def toggle_highlight(event=None):
+    if to_highlight_line.get():
+        highlight_line()
+    else:
+        undo_highlight()
 # all view menu-items will be added here next
 show_line_no = tk.IntVar()
 view_menu.add_checkbutton(label="Show Line Number", variable=show_line_no,
                         command = show_line_no)
 view_menu.add_checkbutton(label = "Show Cursor Location at Bottom")
 show_line_no.set(1)
-view_menu.add_checkbutton(label = "Highlight Current Line", variable = highlight)
+to_highlight_line = tk.BooleanVar()
+view_menu.add_checkbutton(label = "Highlight Current Line", onvalue=1,
+                            offvalue=0, variable=to_highlight_line,
+                            command= toggle_highlight)
 themes_menu = tk.Menu(view_menu, tearoff = 0)
 view_menu.add_cascade(label="Themes", menu=themes_menu)
 themes_menu.add_radiobutton(label = "Defalut")
@@ -272,6 +278,12 @@ def get_line_numbers():
             output += str(i)+ '\n'
     return output
 line_number_bar.pack(side='left', fill='y')
+def highlight_line(interval=100):
+    content_text.tag_remove("active_line", 1.0, "end")
+    content_text.tag_add("active_line", "insert linestart","insert lineend+1c")
+    content_text.after(interval, toggle_highlight)
+def undo_highlight():
+    content_text.tag_remove("active_line", 1.0, "end")
 
 ################## CONTEXT TEXT #######################################################################
 content_text = tk.Text(root, wrap = 'word', undo = 1) # undo = 1 should allow...
@@ -285,7 +297,8 @@ content_text.bind('<Any-KeyPress>', on_content_changed)
 content_text.bind('<Control-a>', select_all)
 scroll_bar = tk.Scrollbar(content_text)
 content_text.config(yscrollcommand = scroll_bar.set)
-
+# set the details for highliting the current line View|Highlight Current Line 
+content_text.tag_configure('active_line', background='ivory2')
 scroll_bar.config(command = content_text.yview)
 root.protocol('WM_DELETE_WINDOW', exit_file)
 root.mainloop()
