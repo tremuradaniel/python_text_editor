@@ -224,6 +224,11 @@ def show_cursor_info_bar():
         cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
     else:
         cursor_info_bar.pack_forget()
+def change_theme(event=None):
+    selected_theme = theme_choice.get()
+    fg_bg_colors = color_schemes.get(selected_theme)
+    foreground_color, background_color = fg_bg_colors.split('.')
+    content_text.config(background=background_color, fg=foreground_color)
 # all view menu-items will be added here next
 show_line_no = tk.IntVar()
 view_menu.add_checkbutton(label="Show Line Number", variable=show_line_no,
@@ -238,10 +243,18 @@ view_menu.add_checkbutton(label = "Highlight Current Line", onvalue=1,
                             command= toggle_highlight)
 themes_menu = tk.Menu(view_menu, tearoff = 0)
 view_menu.add_cascade(label="Themes", menu=themes_menu)
-themes_menu.add_radiobutton(label = "Defalut")
-themes_menu.add_radiobutton(label = "Blue")
-themes_menu.add_radiobutton(label = "Yellow")
-themes_menu.add_radiobutton(label = "Red")
+theme_choice = tk.StringVar()
+color_schemes = {
+    'Default': '#000000.#FFFFFF',
+    'Greygarious':'#83406A.#D1D4D1',
+    'Aquamarine': '#5B8340.#D1E7E0',
+    'Bold Beige': '#4B4620.#FFF0E1',
+    'Cobalt Blue':'#ffffBB.#3333aa',
+    'Olive Green': '#D1E7E0.#5B8340',
+    'Night Mode': '#FFFFFF.#000000',
+}
+for i in color_schemes:
+    themes_menu.add_radiobutton(label=i, variable=theme_choice,command=change_theme)
 menu_bar.add_cascade(label = 'View', menu = view_menu)
 ############################### ABOUT MENU ##########################################################
 about_menu = tk.Menu(menu_bar, tearoff = 0)
