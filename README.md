@@ -9,3 +9,4 @@ Some Features:
 * Line Number Bar (activated from View)
 * A 'Show cursor location at bottom' option in View
 * A 'Highlight current line' option in View
+* A right-click popup menu
