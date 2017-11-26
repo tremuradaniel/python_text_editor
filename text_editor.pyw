@@ -108,6 +108,7 @@ def undo():
     on_content_changed()
 def redo_action(event = None):
     content_text.event_generate("<<Redo>>")
+    on_content_changed()
     return 'break'
  #  return 'break' The return 'break' expression in the preceding function
 # tells the system that it has performed the event and that it should not be
@@ -257,8 +258,12 @@ line_number_bar = tk.Text(root, width = 4, padx = 3, border = 0, takefocus = 0,
                     state = 'disabled',background='khaki', wrap='none')
 def on_content_changed(event=None):
     update_line_numbers()
-def update_line_numbers():
-    content_text.bind('<Any-KeyPress>', on_content_changed)
+def update_line_numbers(event = None):
+    line_numbers = get_line_numbers()
+    line_number_bar.config(state='normal')
+    line_number_bar.delete('1.0', 'end')
+    line_number_bar.insert('1.0', line_numbers)
+    line_number_bar.config(state='disabled')
 def get_line_numbers():
     output = ''
     if show_line_no.get():
@@ -266,12 +271,6 @@ def get_line_numbers():
         for i in range(1, int(row)):
             output += str(i)+ '\n'
     return output
-def update_line_numbers(event = None):
-    line_numbers = get_line_numbers()
-    line_number_bar.config(state='normal')
-    line_number_bar.delete('1.0', 'end')
-    line_number_bar.insert('1.0', line_numbers)
-    line_number_bar.config(state='disabled')
 line_number_bar.pack(side='left', fill='y')
 
 ################## CONTEXT TEXT #######################################################################
@@ -282,6 +281,7 @@ content_text.focus() # text-cursor set in content_text
 content_text.bind('<Control-Z>', redo_action) # this changes the default of
 # <<Redo>> to Shift-Ctrl-Z; if it where <Control-z> NB the lowercase, then it
 # would had been Ctrl-Z
+content_text.bind('<Any-KeyPress>', on_content_changed)
 content_text.bind('<Control-a>', select_all)
 scroll_bar = tk.Scrollbar(content_text)
 content_text.config(yscrollcommand = scroll_bar.set)
