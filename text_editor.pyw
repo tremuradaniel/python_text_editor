@@ -108,8 +108,8 @@ def undo():
     on_content_changed()
 def redo_action(event = None):
     content_text.event_generate("<<Redo>>")
-    on_content_changed()
-    return "break" # The return 'break' expression in the preceding function
+    return 'break'
+ #  return 'break' The return 'break' expression in the preceding function
 # tells the system that it has performed the event and that it should not be
 # propagated further.
 def cut():
@@ -170,9 +170,9 @@ undo_icon = tk.PhotoImage(file = 'static/menu_bar/undo.gif')
 edit_menu.add_command(label = 'Undo', accelerator = 'Ctrl + Z', compound = 'left',
                         image = undo_icon, command = undo)
 #################### REDO
-redo_action = tk.PhotoImage(file = 'static/menu_bar/redo_action.gif')
+redo_action_icon = tk.PhotoImage(file = 'static/menu_bar/redo_action.gif')
 edit_menu.add_command(label = 'Redo', accelerator = 'Shift + Ctrl + Z',
-                        compound = 'left', image = redo_action,
+                        compound = 'left', image = redo_action_icon,
                         command = redo_action)
 edit_menu.add_separator()
 
@@ -206,14 +206,17 @@ menu_bar.add_cascade(label='Edit', menu=edit_menu)
 ############################ VIEW MENU #########################################################
 view_menu = tk.Menu(menu_bar, tearoff = 0)
 def show_line_no():
-    dir(print("OK"))
+    if show_line_no == 1:
+        on_content_changed()
+    else:
+        pass
 def highlight():
     dir(print("OK"))
 # all view menu-items will be added here next
 show_line_no = tk.IntVar()
-view_menu.add_checkbutton(label="Show Line Number", variable=show_line_no)
-view_menu.add_checkbutton(label = "Show Cursor Location at Bottom",
-                        variable = show_line_no)
+view_menu.add_checkbutton(label="Show Line Number", variable=show_line_no,
+                        command = show_line_no)
+view_menu.add_checkbutton(label = "Show Cursor Location at Bottom")
 show_line_no.set(1)
 view_menu.add_checkbutton(label = "Highlight Current Line", variable = highlight)
 themes_menu = tk.Menu(view_menu, tearoff = 0)
@@ -282,6 +285,7 @@ content_text.bind('<Control-Z>', redo_action) # this changes the default of
 content_text.bind('<Control-a>', select_all)
 scroll_bar = tk.Scrollbar(content_text)
 content_text.config(yscrollcommand = scroll_bar.set)
+
 scroll_bar.config(command = content_text.yview)
 root.protocol('WM_DELETE_WINDOW', exit_file)
 root.mainloop()
