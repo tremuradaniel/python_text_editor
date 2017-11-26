@@ -216,11 +216,21 @@ def toggle_highlight(event=None):
         highlight_line()
     else:
         undo_highlight()
+show_cursor_info = tk.IntVar()
+show_cursor_info.set(1)
+def show_cursor_info_bar():
+    show_cursor_info_checked = show_cursor_info.get()
+    if show_cursor_info_checked:
+        cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
+    else:
+        cursor_info_bar.pack_forget()
 # all view menu-items will be added here next
 show_line_no = tk.IntVar()
 view_menu.add_checkbutton(label="Show Line Number", variable=show_line_no,
                         command = show_line_no)
-view_menu.add_checkbutton(label = "Show Cursor Location at Bottom")
+view_menu.add_checkbutton(label = "Show Cursor Location at Bottom",
+                            variable = show_cursor_info,
+                            command =show_cursor_info_bar)
 show_line_no.set(1)
 to_highlight_line = tk.BooleanVar()
 view_menu.add_checkbutton(label = "Highlight Current Line", onvalue=1,
@@ -264,6 +274,7 @@ line_number_bar = tk.Text(root, width = 4, padx = 3, border = 0, takefocus = 0,
                     state = 'disabled',background='khaki', wrap='none')
 def on_content_changed(event=None):
     update_line_numbers()
+    update_cursor_info_bar()
 def update_line_numbers(event = None):
     line_numbers = get_line_numbers()
     line_number_bar.config(state='normal')
@@ -284,7 +295,11 @@ def highlight_line(interval=100):
     content_text.after(interval, toggle_highlight)
 def undo_highlight():
     content_text.tag_remove("active_line", 1.0, "end")
-
+def update_cursor_info_bar(event=None):
+    row, col = content_text.index(tk.INSERT).split('.')
+    line_num, col_num = str(int(row)), str(int(col)+1) # col starts at 0
+    infotext = "Line: {0} | Column: {1}".format(line_num, col_num)
+    cursor_info_bar.config(text=infotext)
 ################## CONTEXT TEXT #######################################################################
 content_text = tk.Text(root, wrap = 'word', undo = 1) # undo = 1 should allow...
 #... the Text widget to have anunlimited undo and redo mechanism
@@ -297,8 +312,11 @@ content_text.bind('<Any-KeyPress>', on_content_changed)
 content_text.bind('<Control-a>', select_all)
 scroll_bar = tk.Scrollbar(content_text)
 content_text.config(yscrollcommand = scroll_bar.set)
-# set the details for highliting the current line View|Highlight Current Line 
+# set the details for highliting the current line View|Highlight Current Line
 content_text.tag_configure('active_line', background='ivory2')
 scroll_bar.config(command = content_text.yview)
+# Curso Information bar
+cursor_info_bar = tk.Label(content_text, text='Line: 1 | Column: 1')
+cursor_info_bar.pack(expand= tk.NO, fill=None, side= tk.RIGHT,anchor='se')
 root.protocol('WM_DELETE_WINDOW', exit_file)
 root.mainloop()
