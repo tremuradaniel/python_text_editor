@@ -331,5 +331,16 @@ scroll_bar.config(command = content_text.yview)
 # Curso Information bar
 cursor_info_bar = tk.Label(content_text, text='Line: 1 | Column: 1')
 cursor_info_bar.pack(expand= tk.NO, fill=None, side= tk.RIGHT,anchor='se')
+# Right click in content_text
+def show_popup_menu(event):
+    popup_menu.tk_popup(event.x_root, event.y_root)
+content_text.bind('<Button-3>', show_popup_menu)
+# popup_menu when right clicking in content_text
+popup_menu = tk.Menu(content_text)
+for i in ('cut', 'copy', 'paste', 'undo', 'redo_action'):
+    cmd = eval(i)
+    popup_menu.add_command(label=i, compound='left', command=cmd)
+popup_menu.add_separator()
+popup_menu.add_command(label='Select All', underline=7, command=select_all)
 root.protocol('WM_DELETE_WINDOW', exit_file)
 root.mainloop()
